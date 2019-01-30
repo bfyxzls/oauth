@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,13 +17,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired
-  private MyUserDetailsService myUserDetailsService;
+  private MyUserDetailsService jpaUserDetailsService;
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    // ingore是完全绕过了spring security的所有filter，相当于不走spring security
+    // permitAll没有绕过spring security，其中包含了登录的以及匿名的。
     http.authorizeRequests()
-        .antMatchers("/oauth/**", "/login/**", "/logout").permitAll()
-        .anyRequest().authenticated()   // 其他地址的访问均需验证权限
+        .antMatchers("/login/**","/test/**").permitAll()
+        .anyRequest().authenticated()
         .and()
         .formLogin()
         .loginPage("/login")
@@ -32,24 +38,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .logout().logoutSuccessUrl("/");
   }
 
-  @Override
-  public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/assets/**");
-  }
-
+  /**
+   * 密码加密的实现.
+   *
+   * @param auth .
+   * @throws Exception .
+   */
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+    auth.userDetailsService(jpaUserDetailsService).passwordEncoder(passwordEncoder());
   }
 
-  @Bean
+  /**
+   * 不定义没有password grant_type
+   *
+   * @return .
+   * @throws Exception .
+   */
   @Override
-  public AuthenticationManager authenticationManager() throws Exception {
-    return super.authenticationManager();
-  }
-
   @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
   }
 }

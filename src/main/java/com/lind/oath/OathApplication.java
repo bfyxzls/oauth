@@ -19,6 +19,11 @@ public class OathApplication {
     return "login";
   }
 
+  @GetMapping("/test")
+  public String test() {
+    return "test";
+  }
+
   @GetMapping("/index")
   public String index() {
     return "index";
