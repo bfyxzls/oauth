@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.2.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
         mavenLocal()
@@ -45,7 +45,7 @@ repositories {
 
 
 ext {
-    springCloudVersion = 'Finchley.SR1'
+    springCloudVersion = 'Greenwich.SR1'
 }
 
 dependencies {
@@ -53,7 +53,15 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
     implementation 'org.springframework.cloud:spring-cloud-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.google.collections:google-collections:1.0-rc2'
+    compile 'redis.clients:jedis:2.8.0'
+    runtime 'mysql:mysql-connector-java:5.1.44'
+    runtime('org.springframework.boot:spring-boot-devtools')
+    compileOnly('org.projectlombok:lombok')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('com.h2database:h2')
+
 }
 
 dependencyManagement {

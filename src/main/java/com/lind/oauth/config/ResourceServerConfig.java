@@ -1,10 +1,11 @@
-package com.lind.oath.config;
+package com.lind.oauth.config;
 
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+
 
 @Configuration
 @EnableResourceServer
@@ -18,7 +19,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
         .and()
         .authorizeRequests()
-        .antMatchers("/test","/login", "/oauth/token").permitAll()
+        .antMatchers("/html/**").permitAll()
         .anyRequest().authenticated()
         .and()
         .httpBasic();

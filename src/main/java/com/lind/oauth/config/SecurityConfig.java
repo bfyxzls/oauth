@@ -1,6 +1,6 @@
-package com.lind.oath.config;
+package com.lind.oauth.config;
 
-import com.lind.oath.MyUserDetailsService;
+import com.lind.oauth.service.security.JPAUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
   @Autowired
-  private MyUserDetailsService jpaUserDetailsService;
+  private JPAUserDetailsService jpaUserDetailsService;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -29,13 +29,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // ingore是完全绕过了spring security的所有filter，相当于不走spring security
     // permitAll没有绕过spring security，其中包含了登录的以及匿名的。
     http.authorizeRequests()
-        .antMatchers("/login/**","/test/**").permitAll()
+        .antMatchers("/ouath/**").permitAll()
         .anyRequest().authenticated()
         .and()
-        .formLogin()
-        .loginPage("/login")
-        .and()
-        .logout().logoutSuccessUrl("/");
+        .csrf().disable();
   }
 
   /**
