@@ -27,29 +27,24 @@ public class Init implements CommandLineRunner {
     //权限
     Authority authority = new Authority();
     authority.setName("查询");
-    authority.setValue("query");
+    authority.setValue("read");
     authorityRepository.save(authority);
     Authority authority2 = new Authority();
     authority2.setName("添加");
-    authority2.setValue("add");
+    authority2.setValue("write");
     authorityRepository.save(authority2);
 
     //角色
     Role admin = new Role();
     admin.setName("管理员");
     admin.setValue("ROLE_ADMIN");
-    admin.setAuthorities(
-        Sets.newHashSet(
-            authorityRepository.findById(1L).get(),
-            authorityRepository.findById(2L).get()
-        )
-    );
-
+    admin.setAuthorities(Sets.newHashSet(authority, authority2));
     roleRepository.save(admin);
 
     Role role = new Role();
     role.setName("普通用户");
     role.setValue("ROLE_USER");
+    role.setAuthorities(Sets.newHashSet(authority));
     roleRepository.save(role);
 
 

@@ -16,14 +16,18 @@ public class OathApplication {
   }
 
   @GetMapping("/user")
-  @PreAuthorize("hasRole('admin')")
   public Principal user(Principal user) {
     return user;
   }
 
   @GetMapping("/index")
-  @PreAuthorize("hasAuthority('write')")
   public String index() {
     return "index";
   }
+
+  @GetMapping("/oauth/callback")
+  public String callback() {
+    return "hello oauth2";
+  }
+
 }

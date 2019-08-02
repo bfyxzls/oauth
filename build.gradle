@@ -55,7 +55,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.google.collections:google-collections:1.0-rc2'
-    compile 'redis.clients:jedis:2.8.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'com.github.zhanhb:thymeleaf-layout-dialect:2.3.0'
+    
     runtime 'mysql:mysql-connector-java:5.1.44'
     runtime('org.springframework.boot:spring-boot-devtools')
     compileOnly('org.projectlombok:lombok')

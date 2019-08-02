@@ -2,10 +2,10 @@ package com.lind.oauth.config;
 
 import com.lind.oauth.service.security.JPAUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -27,6 +27,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
   private RedisConnectionFactory connectionFactory;
   @Autowired
   private JPAUserDetailsService jpaUserDetailsService;
+  @Value("${user.oauth.clientId:android1}")
+  private String ClientID;
+  @Value("${user.oauth.clientSecret:android1}")
+  private String ClientSecret;
+  @Value("${user.oauth.redirectUris:http://localhost:8081/callback}")
+  private String RedirectURLs;
 
   @Bean
   public RedisTokenStore tokenStore() {
@@ -41,21 +47,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
   }
 
   @Override
-  public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-    security.allowFormAuthenticationForClients()
-        .tokenKeyAccess("permitAll()")
-        .checkTokenAccess("isAuthenticated()");
-
+  public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+    oauthServer.tokenKeyAccess("permitAll()")
+        .checkTokenAccess("isAuthenticated()")
+        .allowFormAuthenticationForClients();//支持把secret和clientid写在url上，否则需要在头上
 
   }
 
   @Override
   public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-    //授权客户端这块，可以存储到数据库里，每个客户都有自己的clientId,secret,scopes等.
     clients.inMemory()
-        .withClient("android1")
-        .secret(passwordEncoder.encode("android1"))//springboot2.1以后用这种方式
-        .scopes("*")
-        .authorizedGrantTypes("password", "authorization_code", "refresh_token");
+        .withClient(ClientID)
+        .secret(passwordEncoder.encode(ClientSecret))
+        .authorizedGrantTypes("authorization_code", "refresh_token", "password", "implicit")
+        .scopes("read","write","del","userinfo")
+        .authorities("ROLE_ADMIN")
+        .redirectUris(RedirectURLs);
   }
 }

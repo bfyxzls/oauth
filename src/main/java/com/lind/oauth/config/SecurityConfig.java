@@ -4,9 +4,12 @@ import com.lind.oauth.service.security.JPAUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+@Order(2)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private JPAUserDetailsService jpaUserDetailsService;
@@ -25,14 +30,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers("/resources/**");
+  }
+
+  @Override
   protected void configure(HttpSecurity http) throws Exception {
-    // ingore是完全绕过了spring security的所有filter，相当于不走spring security
-    // permitAll没有绕过spring security，其中包含了登录的以及匿名的。
-    http.authorizeRequests()
-        .antMatchers("/ouath/**").permitAll()
-        .anyRequest().authenticated()
-        .and()
-        .csrf().disable();
+    http.csrf().disable()//禁用了 csrf 功能
+        .authorizeRequests()//限定签名成功的请求
+        .antMatchers("/index").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
+        .antMatchers("/user").authenticated()//签名成功后可访问，不受role限制
+        .anyRequest().permitAll()//其他没有限定的请求，允许访问
+        .and().anonymous()//对于没有配置权限的其他请求允许匿名访问
+        .and().formLogin()//使用 spring security 默认登录页面
+        .and().httpBasic();//启用http 基础验证
+
   }
 
   /**
@@ -45,6 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.userDetailsService(jpaUserDetailsService).passwordEncoder(passwordEncoder());
   }
+
+//  @Override
+//  public void configure(AuthenticationManagerBuilder authenticationMgr) throws Exception {
+// 这是一个测试的账号，不需要数据库支持
+//    authenticationMgr.inMemoryAuthentication().withUser("admin").password("admin")
+//        .authorities("ROLE_ADMIN");
+//  }
 
   /**
    * 不定义没有password grant_type
