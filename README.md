@@ -121,9 +121,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
   @Override
   public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-    oauthServer.tokenKeyAccess("permitAll()")
-        .checkTokenAccess("isAuthenticated()");
-
+        //不使用form认证，而使用的是授权码认证，access_token可以在header上，也可以在url地址上传递
+        oauthServer.tokenKeyAccess("isAuthenticated()")
+            .checkTokenAccess("permitAll()")
+            .allowFormAuthenticationForClients();//支持把secret和clientid写在url上，否则需要在头上
   }
 
   @Override

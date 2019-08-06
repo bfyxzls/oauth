@@ -44,13 +44,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         .authenticationManager(authenticationManager)
         .userDetailsService(jpaUserDetailsService)//若无，refresh_token会有UserDetailsService is required错误
         .tokenStore(tokenStore());
+
   }
 
   @Override
   public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-    oauthServer.tokenKeyAccess("permitAll()")
-        .checkTokenAccess("isAuthenticated()")
-        .allowFormAuthenticationForClients();//支持把secret和clientid写在url上，否则需要在头上
+    // 配置token获取和验证时的策略 (Spring Security安全表达式),可以表单提交
+    oauthServer.tokenKeyAccess( "permitAll()").checkTokenAccess("isAuthenticated()").allowFormAuthenticationForClients();
+
 
   }
 
@@ -60,8 +61,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         .withClient(ClientID)
         .secret(passwordEncoder.encode(ClientSecret))
         .authorizedGrantTypes("authorization_code", "refresh_token", "password", "implicit")
-        .scopes("read","write","del","userinfo")
-        .authorities("ROLE_ADMIN")
-        .redirectUris(RedirectURLs);
+        .scopes("all","read","write","del")
+        .redirectUris(RedirectURLs)
+        .accessTokenValiditySeconds(1200)
+        .refreshTokenValiditySeconds(50000);
   }
 }

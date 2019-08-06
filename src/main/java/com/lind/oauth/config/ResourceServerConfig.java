@@ -6,7 +6,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
-
+/**
+ * 资源授权.
+ */
 @Configuration
 @EnableResourceServer
 @Order(6)
@@ -15,8 +17,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
   public void configure(HttpSecurity http) throws Exception {
     http.csrf().disable()//禁用了 csrf 功能
         .authorizeRequests()//限定签名成功的请求
-        .antMatchers("/index").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
-        .antMatchers("/users").authenticated()//签名成功后可访问，不受role限制
+        .antMatchers("/index").hasAnyAuthority("del")
+        .antMatchers("/user").authenticated()//签名成功后可访问，不受role限制
         .anyRequest().permitAll()//其他没有限定的请求，允许访问
         .and().anonymous()//对于没有配置权限的其他请求允许匿名访问
         .and().formLogin()//使用 spring security 默认登录页面

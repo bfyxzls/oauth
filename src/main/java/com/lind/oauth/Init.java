@@ -33,12 +33,15 @@ public class Init implements CommandLineRunner {
     authority2.setName("添加");
     authority2.setValue("write");
     authorityRepository.save(authority2);
-
+    Authority authority3 = new Authority();
+    authority3.setName("删除");
+    authority3.setValue("del");
+    authorityRepository.save(authority3);
     //角色
     Role admin = new Role();
     admin.setName("管理员");
     admin.setValue("ROLE_ADMIN");
-    admin.setAuthorities(Sets.newHashSet(authority, authority2));
+    admin.setAuthorities(Sets.newHashSet(authority, authority2,authority3));
     roleRepository.save(admin);
 
     Role role = new Role();

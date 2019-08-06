@@ -31,20 +31,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/resources/**");
+    // 忽略URL
+    web.ignoring().antMatchers("/**/*.js", "/lang/*.json",
+        "/**/*.css", "/**/*.js", "/**/*.map", "/**/*.html",
+        "/**/*.png");
+
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()//禁用了 csrf 功能
-        .authorizeRequests()//限定签名成功的请求
-        .antMatchers("/index").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
-        .antMatchers("/user").authenticated()//签名成功后可访问，不受role限制
-        .anyRequest().permitAll()//其他没有限定的请求，允许访问
-        .and().anonymous()//对于没有配置权限的其他请求允许匿名访问
-        .and().formLogin()//使用 spring security 默认登录页面
-        .and().httpBasic();//启用http 基础验证
-
+    http.csrf().disable();
+    http
+        .requestMatchers().antMatchers("/oauth/**","/login/**","/logout/**")
+        .and()
+        .authorizeRequests()
+        .antMatchers("/oauth/**").authenticated()
+        .and()
+        .formLogin().permitAll(); //新增login form支持用户登录及授权
   }
 
   /**
@@ -57,13 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.userDetailsService(jpaUserDetailsService).passwordEncoder(passwordEncoder());
   }
-
-//  @Override
-//  public void configure(AuthenticationManagerBuilder authenticationMgr) throws Exception {
-// 这是一个测试的账号，不需要数据库支持
-//    authenticationMgr.inMemoryAuthentication().withUser("admin").password("admin")
-//        .authorities("ROLE_ADMIN");
-//  }
 
   /**
    * 不定义没有password grant_type

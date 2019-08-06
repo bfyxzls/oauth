@@ -33,5 +33,3 @@ spring:
         max-file-size: 2MB
     resources:
       static-locations: classpath:static/,file:static/
-security:
-   oauth2.resource.filter-order: 3
