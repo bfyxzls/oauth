@@ -50,9 +50,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
   @Override
   public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
     // 配置token获取和验证时的策略 (Spring Security安全表达式),可以表单提交
-    oauthServer.tokenKeyAccess( "permitAll()").checkTokenAccess("isAuthenticated()").allowFormAuthenticationForClients();
-
-
+    oauthServer.tokenKeyAccess( "permitAll()")
+        .checkTokenAccess("isAuthenticated()")
+        .allowFormAuthenticationForClients();
   }
 
   @Override

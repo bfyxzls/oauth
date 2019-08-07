@@ -47,7 +47,8 @@ public class User extends BaseEntity implements UserDetails {
   private Set<GrantedAuthority> authorities = new HashSet<>();
 
   /**
-   * 注意，这块需要重写
+   * 注意，这块需要加@Override重写，否则权限无效.
+   *
    * @return
    */
   @Override
