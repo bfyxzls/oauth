@@ -46,7 +46,11 @@ public class User extends BaseEntity implements UserDetails {
   @Transient
   private Set<GrantedAuthority> authorities = new HashSet<>();
 
-
+  /**
+   * 注意，这块需要重写
+   * @return
+   */
+  @Override
   public Set<GrantedAuthority> getAuthorities() {
     Set<GrantedAuthority> authorities = new HashSet<>();
     for (Role role : this.roles) {
