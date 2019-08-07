@@ -17,7 +17,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
   public void configure(HttpSecurity http) throws Exception {
     http.csrf().disable()//禁用了 csrf 功能
         .authorizeRequests()//限定签名成功的请求
-        .antMatchers("/index").hasAnyAuthority("ROLE_ADMIN")
+        .antMatchers("/index").access("#oauth2.hasScope('del')") //授权码scopes里需要选中del才可以访问
         .antMatchers("/user").authenticated()//签名成功后可访问，不受role限制
         .anyRequest().permitAll()//其他没有限定的请求，允许访问
         .and().anonymous()//对于没有配置权限的其他请求允许匿名访问
